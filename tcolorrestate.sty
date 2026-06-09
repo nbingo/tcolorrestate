@@ -1,16 +1,89 @@
 % tcolorrestate.sty
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{tcolorrestate}[2026/05/28 Colored theorem boxes with Nomi colors]
+\ProvidesPackage{tcolorrestate}[2026/05/28 Colored/restatable theorem boxes with configurable colors]
 
 % ------------------------------------------------------------
 % Package options
 % ------------------------------------------------------------
+%
+% Basic usage:
+%   \usepackage{tcolorrestate}
+%
+% Plain, unboxed theorems:
+%   \usepackage[plain]{tcolorrestate}
+%
+% Custom base colors:
+%   \usepackage[
+%     theoremcolor=MidnightBlue,
+%     definitioncolor=BrickRed,
+%     lemmacolor=RoyalBlue,
+%     remarkcolor=Plum,
+%     examplecolor=ForestGreen,
+%     warningcolor=Orange,
+%     conjecturecolor=Sepia
+%   ]{tcolorrestate}
+%
+% Fully custom background/frame colors:
+%   \usepackage[
+%     theoremback=blue!3,
+%     theoremframe=blue!60!black,
+%     definitionback=red!3,
+%     definitionframe=red!60!black
+%   ]{tcolorrestate}
 
-\newif\iftcolorrestate@plain
-\tcolorrestate@plainfalse
+\RequirePackage{kvoptions}
 
-\DeclareOption{plain}{\tcolorrestate@plaintrue}
-\ProcessOptions\relax
+\SetupKeyvalOptions{
+  family=tcolorrestate,
+  prefix=tcolorrestate@
+}
+
+\DeclareBoolOption[false]{plain}
+
+% Base color options.  The default background/frame colors are derived as
+% <base>!5 and <base>!70!black, respectively, unless explicitly overridden
+% by the corresponding *back or *frame option below.
+\DeclareStringOption[Cerulean]{theoremcolor}
+\DeclareStringOption[red]{definitioncolor}
+\DeclareStringOption[Cerulean]{lemmacolor}
+\DeclareStringOption[Plum]{remarkcolor}
+\DeclareStringOption[ForestGreen]{examplecolor}
+\DeclareStringOption[WarnColor]{warningcolor}
+\DeclareStringOption[Sepia]{conjecturecolor}
+
+% These default to the lemma color unless specified separately.
+\DeclareStringOption[]{factcolor}
+\DeclareStringOption[]{claimcolor}
+\DeclareStringOption[]{corollarycolor}
+\DeclareStringOption[]{propositioncolor}
+
+% Optional direct background-color overrides.
+\DeclareStringOption[]{theoremback}
+\DeclareStringOption[]{definitionback}
+\DeclareStringOption[]{lemmaback}
+\DeclareStringOption[]{remarkback}
+\DeclareStringOption[]{exampleback}
+\DeclareStringOption[]{warningback}
+\DeclareStringOption[]{conjectureback}
+\DeclareStringOption[]{factback}
+\DeclareStringOption[]{claimback}
+\DeclareStringOption[]{corollaryback}
+\DeclareStringOption[]{propositionback}
+
+% Optional direct frame-color overrides.
+\DeclareStringOption[]{theoremframe}
+\DeclareStringOption[]{definitionframe}
+\DeclareStringOption[]{lemmaframe}
+\DeclareStringOption[]{remarkframe}
+\DeclareStringOption[]{exampleframe}
+\DeclareStringOption[]{warningframe}
+\DeclareStringOption[]{conjectureframe}
+\DeclareStringOption[]{factframe}
+\DeclareStringOption[]{claimframe}
+\DeclareStringOption[]{corollaryframe}
+\DeclareStringOption[]{propositionframe}
+
+\ProcessKeyvalOptions*
 
 % ------------------------------------------------------------
 % Required packages
@@ -29,6 +102,129 @@
 
 \definecolor{WarnColor}{HTML}{FFCC00}
 
+% Fill in inherited colors and derived background/frame colors.
+\makeatletter
+
+% Environments that used to share lem-style inherit the lemma base color
+% unless the user explicitly supplied a separate base color.
+\ifx\tcolorrestate@factcolor\@empty
+  \let\tcolorrestate@factcolor\tcolorrestate@lemmacolor
+\fi
+\ifx\tcolorrestate@claimcolor\@empty
+  \let\tcolorrestate@claimcolor\tcolorrestate@lemmacolor
+\fi
+\ifx\tcolorrestate@corollarycolor\@empty
+  \let\tcolorrestate@corollarycolor\tcolorrestate@lemmacolor
+\fi
+\ifx\tcolorrestate@propositioncolor\@empty
+  \let\tcolorrestate@propositioncolor\tcolorrestate@lemmacolor
+\fi
+
+% If no explicit background/frame is supplied, derive it from the base color.
+\ifx\tcolorrestate@theoremback\@empty
+  \edef\tcolorrestate@theoremback{\tcolorrestate@theoremcolor!5}%
+\fi
+\ifx\tcolorrestate@theoremframe\@empty
+  \edef\tcolorrestate@theoremframe{\tcolorrestate@theoremcolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@definitionback\@empty
+  \edef\tcolorrestate@definitionback{\tcolorrestate@definitioncolor!5}%
+\fi
+\ifx\tcolorrestate@definitionframe\@empty
+  \edef\tcolorrestate@definitionframe{\tcolorrestate@definitioncolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@lemmaback\@empty
+  \edef\tcolorrestate@lemmaback{\tcolorrestate@lemmacolor!5}%
+\fi
+\ifx\tcolorrestate@lemmaframe\@empty
+  \edef\tcolorrestate@lemmaframe{\tcolorrestate@lemmacolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@remarkback\@empty
+  \edef\tcolorrestate@remarkback{\tcolorrestate@remarkcolor!5}%
+\fi
+\ifx\tcolorrestate@remarkframe\@empty
+  \edef\tcolorrestate@remarkframe{\tcolorrestate@remarkcolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@exampleback\@empty
+  \edef\tcolorrestate@exampleback{\tcolorrestate@examplecolor!5}%
+\fi
+\ifx\tcolorrestate@exampleframe\@empty
+  \edef\tcolorrestate@exampleframe{\tcolorrestate@examplecolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@warningback\@empty
+  \edef\tcolorrestate@warningback{\tcolorrestate@warningcolor!25}%
+\fi
+\ifx\tcolorrestate@warningframe\@empty
+  \edef\tcolorrestate@warningframe{\tcolorrestate@warningcolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@conjectureback\@empty
+  \edef\tcolorrestate@conjectureback{\tcolorrestate@conjecturecolor!5}%
+\fi
+\ifx\tcolorrestate@conjectureframe\@empty
+  \edef\tcolorrestate@conjectureframe{\tcolorrestate@conjecturecolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@factback\@empty
+  \edef\tcolorrestate@factback{\tcolorrestate@factcolor!5}%
+\fi
+\ifx\tcolorrestate@factframe\@empty
+  \edef\tcolorrestate@factframe{\tcolorrestate@factcolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@claimback\@empty
+  \edef\tcolorrestate@claimback{\tcolorrestate@claimcolor!5}%
+\fi
+\ifx\tcolorrestate@claimframe\@empty
+  \edef\tcolorrestate@claimframe{\tcolorrestate@claimcolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@corollaryback\@empty
+  \edef\tcolorrestate@corollaryback{\tcolorrestate@corollarycolor!5}%
+\fi
+\ifx\tcolorrestate@corollaryframe\@empty
+  \edef\tcolorrestate@corollaryframe{\tcolorrestate@corollarycolor!70!black}%
+\fi
+
+\ifx\tcolorrestate@propositionback\@empty
+  \edef\tcolorrestate@propositionback{\tcolorrestate@propositioncolor!5}%
+\fi
+\ifx\tcolorrestate@propositionframe\@empty
+  \edef\tcolorrestate@propositionframe{\tcolorrestate@propositioncolor!70!black}%
+\fi
+
+% Freeze the selected color expressions into ordinary xcolor color names.
+% This avoids having internal macros containing @ evaluated later, when @ may
+% no longer be a letter.
+\colorlet{tcolorrestateTheoremBack}{\tcolorrestate@theoremback}
+\colorlet{tcolorrestateTheoremFrame}{\tcolorrestate@theoremframe}
+\colorlet{tcolorrestateDefinitionBack}{\tcolorrestate@definitionback}
+\colorlet{tcolorrestateDefinitionFrame}{\tcolorrestate@definitionframe}
+\colorlet{tcolorrestateLemmaBack}{\tcolorrestate@lemmaback}
+\colorlet{tcolorrestateLemmaFrame}{\tcolorrestate@lemmaframe}
+\colorlet{tcolorrestateRemarkBack}{\tcolorrestate@remarkback}
+\colorlet{tcolorrestateRemarkFrame}{\tcolorrestate@remarkframe}
+\colorlet{tcolorrestateExampleBack}{\tcolorrestate@exampleback}
+\colorlet{tcolorrestateExampleFrame}{\tcolorrestate@exampleframe}
+\colorlet{tcolorrestateWarningBack}{\tcolorrestate@warningback}
+\colorlet{tcolorrestateWarningFrame}{\tcolorrestate@warningframe}
+\colorlet{tcolorrestateFactBack}{\tcolorrestate@factback}
+\colorlet{tcolorrestateFactFrame}{\tcolorrestate@factframe}
+\colorlet{tcolorrestateClaimBack}{\tcolorrestate@claimback}
+\colorlet{tcolorrestateClaimFrame}{\tcolorrestate@claimframe}
+\colorlet{tcolorrestateCorollaryBack}{\tcolorrestate@corollaryback}
+\colorlet{tcolorrestateCorollaryFrame}{\tcolorrestate@corollaryframe}
+\colorlet{tcolorrestatePropositionBack}{\tcolorrestate@propositionback}
+\colorlet{tcolorrestatePropositionFrame}{\tcolorrestate@propositionframe}
+\colorlet{tcolorrestateConjectureBack}{\tcolorrestate@conjectureback}
+\colorlet{tcolorrestateConjectureFrame}{\tcolorrestate@conjectureframe}
+
+
 \tcbset{
   thm-base/.style={
     enhanced,
@@ -39,48 +235,59 @@
     right=1ex,
     top=0.8ex,
     bottom=0.8ex,
-    colback=Cerulean!5,
-    colframe=Cerulean!70!black,
+    colback=tcolorrestateTheoremBack,
+    colframe=tcolorrestateTheoremFrame,
     opacityback=1,
   },
   def-style/.style={
     thm-base,
-    colback=red!5,
-    colframe=red!70!black,
+    colback=tcolorrestateDefinitionBack,
+    colframe=tcolorrestateDefinitionFrame,
   },
   lem-style/.style={
     thm-base,
-    colback=Cerulean!5,
-    colframe=Cerulean!70!black,
+    colback=tcolorrestateLemmaBack,
+    colframe=tcolorrestateLemmaFrame,
   },
   rmk-style/.style={
     thm-base,
-    colback=Plum!5,
-    colframe=Plum!70!black,
+    colback=tcolorrestateRemarkBack,
+    colframe=tcolorrestateRemarkFrame,
   },
   ex-style/.style={
     thm-base,
-    colback=ForestGreen!5,
-    colframe=ForestGreen!70!black,
+    colback=tcolorrestateExampleBack,
+    colframe=tcolorrestateExampleFrame,
   },
   warn-style/.style={
     thm-base,
-    colback=WarnColor!25,
-    colframe=WarnColor!70!black,
+    colback=tcolorrestateWarningBack,
+    colframe=tcolorrestateWarningFrame,
+  },
+  fact-style/.style={
+    thm-base,
+    colback=tcolorrestateFactBack,
+    colframe=tcolorrestateFactFrame,
   },
   claim-style/.style={
-    lem-style
+    thm-base,
+    colback=tcolorrestateClaimBack,
+    colframe=tcolorrestateClaimFrame,
   },
   cor-style/.style={
-    lem-style
+    thm-base,
+    colback=tcolorrestateCorollaryBack,
+    colframe=tcolorrestateCorollaryFrame,
   },
   prop-style/.style={
-    lem-style
+    thm-base,
+    colback=tcolorrestatePropositionBack,
+    colframe=tcolorrestatePropositionFrame,
   },
   conj-style/.style={
     thm-base,
-    colback=Sepia!5,
-    colframe=Sepia!70!black,
+    colback=tcolorrestateConjectureBack,
+    colframe=tcolorrestateConjectureFrame,
   },
 }
 
@@ -214,7 +421,7 @@
   }%
 
   \addtotheorempreheadhook[fact]{%
-    \begin{tcolorbox}[lem-style]%
+    \begin{tcolorbox}[fact-style]%
   }%
   \addtotheorempostfoothook[fact]{%
     \end{tcolorbox}%
