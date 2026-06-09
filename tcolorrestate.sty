@@ -1,0 +1,306 @@
+% tcolorrestate.sty
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tcolorrestate}[2026/05/28 Colored theorem boxes with Nomi colors]
+
+% ------------------------------------------------------------
+% Package options
+% ------------------------------------------------------------
+
+\newif\iftcolorrestate@plain
+\tcolorrestate@plainfalse
+
+\DeclareOption{plain}{\tcolorrestate@plaintrue}
+\ProcessOptions\relax
+
+% ------------------------------------------------------------
+% Required packages
+% ------------------------------------------------------------
+
+\RequirePackage[dvipsnames]{xcolor}
+\RequirePackage[most]{tcolorbox}
+\tcbuselibrary{theorems,breakable,skins}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+\RequirePackage{thm-restate}
+
+% ------------------------------------------------------------
+% Colors and tcolorbox styles
+% ------------------------------------------------------------
+
+\definecolor{WarnColor}{HTML}{FFCC00}
+
+\tcbset{
+  thm-base/.style={
+    enhanced,
+    breakable,
+    boxrule=0.8pt,
+    arc=2mm,
+    left=1ex,
+    right=1ex,
+    top=0.8ex,
+    bottom=0.8ex,
+    colback=Cerulean!5,
+    colframe=Cerulean!70!black,
+    opacityback=1,
+  },
+  def-style/.style={
+    thm-base,
+    colback=red!5,
+    colframe=red!70!black,
+  },
+  lem-style/.style={
+    thm-base,
+    colback=Cerulean!5,
+    colframe=Cerulean!70!black,
+  },
+  rmk-style/.style={
+    thm-base,
+    colback=Plum!5,
+    colframe=Plum!70!black,
+  },
+  ex-style/.style={
+    thm-base,
+    colback=ForestGreen!5,
+    colframe=ForestGreen!70!black,
+  },
+  warn-style/.style={
+    thm-base,
+    colback=WarnColor!25,
+    colframe=WarnColor!70!black,
+  },
+  claim-style/.style={
+    lem-style
+  },
+  cor-style/.style={
+    lem-style
+  },
+  prop-style/.style={
+    lem-style
+  },
+  conj-style/.style={
+    thm-base,
+    colback=Sepia!5,
+    colframe=Sepia!70!black,
+  },
+}
+
+% ------------------------------------------------------------
+% Theorem style
+% ------------------------------------------------------------
+
+\declaretheoremstyle[
+  headfont=\bfseries,
+  bodyfont=\normalfont,
+  spaceabove=6pt,
+  spacebelow=6pt,
+  headpunct={.},
+  postheadspace=0.5em
+]{thmplain}
+
+% ------------------------------------------------------------
+% Theorem environments
+% ------------------------------------------------------------
+
+\declaretheorem[
+  style=thmplain,
+  numberwithin=section
+]{theorem}
+
+\declaretheorem[
+  style=thmplain,
+  name=Definition,
+  sibling=theorem
+]{definition}
+
+\declaretheorem[
+  style=thmplain,
+  name=Lemma,
+  sibling=theorem
+]{lemma}
+
+\declaretheorem[
+  style=thmplain,
+  name=Remark,
+  sibling=theorem
+]{remark}
+
+\declaretheorem[
+  style=thmplain,
+  name=Example,
+  sibling=theorem
+]{example}
+
+\declaretheorem[
+  style=thmplain,
+  name=Fact,
+  sibling=theorem
+]{fact}
+
+\declaretheorem[
+  style=thmplain,
+  name=Warning,
+  sibling=theorem
+]{warning}
+
+\declaretheorem[
+  style=thmplain,
+  name=Claim,
+  sibling=theorem
+]{claim}
+
+\declaretheorem[
+  style=thmplain,
+  name=Corollary,
+  sibling=theorem
+]{corollary}
+
+\declaretheorem[
+  style=thmplain,
+  name=Proposition,
+  sibling=theorem
+]{proposition}
+
+\declaretheorem[
+  style=thmplain,
+  name=Conjecture,
+  sibling=theorem
+]{conjecture}
+
+% ------------------------------------------------------------
+% Wrap theorem environments in color boxes,
+% unless the package is loaded with [plain].
+%
+% Important:
+% We use thmtools hooks rather than \tcolorboxenvironment,
+% so that restatable theorems are boxed too.
+% ------------------------------------------------------------
+
+\iftcolorrestate@plain
+  % Do nothing: theorem environments remain plain.
+\else
+  \addtotheorempreheadhook[theorem]{%
+    \begin{tcolorbox}[thm-base]%
+  }%
+  \addtotheorempostfoothook[theorem]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[definition]{%
+    \begin{tcolorbox}[def-style]%
+  }%
+  \addtotheorempostfoothook[definition]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[lemma]{%
+    \begin{tcolorbox}[lem-style]%
+  }%
+  \addtotheorempostfoothook[lemma]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[remark]{%
+    \begin{tcolorbox}[rmk-style]%
+  }%
+  \addtotheorempostfoothook[remark]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[example]{%
+    \begin{tcolorbox}[ex-style]%
+  }%
+  \addtotheorempostfoothook[example]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[fact]{%
+    \begin{tcolorbox}[lem-style]%
+  }%
+  \addtotheorempostfoothook[fact]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[warning]{%
+    \begin{tcolorbox}[warn-style]%
+  }%
+  \addtotheorempostfoothook[warning]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[claim]{%
+    \begin{tcolorbox}[claim-style]%
+  }%
+  \addtotheorempostfoothook[claim]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[corollary]{%
+    \begin{tcolorbox}[cor-style]%
+  }%
+  \addtotheorempostfoothook[corollary]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[proposition]{%
+    \begin{tcolorbox}[prop-style]%
+  }%
+  \addtotheorempostfoothook[proposition]{%
+    \end{tcolorbox}%
+  }%
+
+  \addtotheorempreheadhook[conjecture]{%
+    \begin{tcolorbox}[conj-style]%
+  }%
+  \addtotheorempostfoothook[conjecture]{%
+    \end{tcolorbox}%
+  }%
+\fi
+
+% ------------------------------------------------------------
+% cleveref names
+% ------------------------------------------------------------
+
+\makeatletter
+
+\newcommand{\tcolorrestate@setcrefnames}{%
+  \crefname{theorem}{theorem}{theorems}%
+  \Crefname{theorem}{Theorem}{Theorems}%
+
+  \crefname{definition}{definition}{definitions}%
+  \Crefname{definition}{Definition}{Definitions}%
+
+  \crefname{lemma}{lemma}{lemmas}%
+  \Crefname{lemma}{Lemma}{Lemmas}%
+
+  \crefname{remark}{remark}{remarks}%
+  \Crefname{remark}{Remark}{Remarks}%
+
+  \crefname{example}{example}{examples}%
+  \Crefname{example}{Example}{Examples}%
+
+  \crefname{fact}{fact}{facts}%
+  \Crefname{fact}{Fact}{Facts}%
+
+  \crefname{warning}{warning}{warnings}%
+  \Crefname{warning}{Warning}{Warnings}%
+
+  \crefname{claim}{claim}{claims}%
+  \Crefname{claim}{Claim}{Claims}%
+
+  \crefname{corollary}{corollary}{corollaries}%
+  \Crefname{corollary}{Corollary}{Corollaries}%
+
+  \crefname{proposition}{proposition}{propositions}%
+  \Crefname{proposition}{Proposition}{Propositions}%
+
+  \crefname{conjecture}{conjecture}{conjectures}%
+  \Crefname{conjecture}{Conjecture}{Conjectures}%
+}
+
+\@ifpackageloaded{cleveref}{%
+  \tcolorrestate@setcrefnames
+}{%
+  \AddToHook{package/cleveref/after}{\tcolorrestate@setcrefnames}%
+}
+
+\makeatother
